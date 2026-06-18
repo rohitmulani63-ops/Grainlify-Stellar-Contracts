@@ -302,25 +302,25 @@ export function parseContractError(error: any): ContractError {
   const hasBountyContext = /bounty/i.test(errorMessage);
 
   // ── Program-escrow patterns ────────────────────────────────────────────
-  if (errorMessage.includes('not initialized') || errorMessage.includes('Program not initialized')) {
+  if (!hasBountyContext && (errorMessage.includes('not initialized') || errorMessage.includes('Program not initialized'))) {
     return createContractError(ContractErrorCode.NOT_INITIALIZED);
   }
-  if (errorMessage.includes('require_auth') || errorMessage.includes('Unauthorized')) {
+  if (!hasBountyContext && (errorMessage.includes('require_auth') || errorMessage.includes('Unauthorized'))) {
     return createContractError(ContractErrorCode.UNAUTHORIZED);
   }
   if (errorMessage.includes('Insufficient balance')) {
     return createContractError(ContractErrorCode.INSUFFICIENT_BALANCE);
   }
-  if (/below.*min(imum)?|AmountBelowMinimum/i.test(errorMessage)) {
+  if (!hasBountyContext && /below.*min(imum)?|AmountBelowMinimum/i.test(errorMessage)) {
     return createContractError(ContractErrorCode.AMOUNT_BELOW_MIN);
   }
-  if (/above.*max(imum)?|exceed.*max|AmountAboveMaximum/i.test(errorMessage)) {
+  if (!hasBountyContext && /above.*max(imum)?|exceed.*max|AmountAboveMaximum/i.test(errorMessage)) {
     return createContractError(ContractErrorCode.AMOUNT_ABOVE_MAX);
   }
   if (errorMessage.includes('must be greater than zero')) {
     return createContractError(ContractErrorCode.INVALID_AMOUNT);
   }
-  if (errorMessage.includes('already initialized')) {
+  if (!hasBountyContext && errorMessage.includes('already initialized')) {
     return createContractError(ContractErrorCode.ALREADY_INITIALIZED);
   }
   if (errorMessage.includes('empty batch')) {
@@ -337,6 +337,12 @@ export function parseContractError(error: any): ContractError {
   }
 
   // ── Bounty-escrow patterns ─────────────────────────────────────────────
+  if (hasBountyContext && (errorMessage.includes('AlreadyInitialized') || errorMessage.includes('already initialized'))) {
+    return createContractError(ContractErrorCode.BOUNTY_ALREADY_INITIALIZED);
+  }
+  if (hasBountyContext && (errorMessage.includes('NotInitialized') || errorMessage.includes('not initialized') || errorMessage.includes('has not been initialized'))) {
+    return createContractError(ContractErrorCode.BOUNTY_NOT_INITIALIZED);
+  }
   if (errorMessage.includes('BountyExists') || errorMessage.includes('bounty with this ID already exists')) {
     return createContractError(ContractErrorCode.BOUNTY_EXISTS);
   }
@@ -351,6 +357,9 @@ export function parseContractError(error: any): ContractError {
   }
   if (errorMessage.includes('DeadlineNotPassed') || errorMessage.includes('deadline has not passed')) {
     return createContractError(ContractErrorCode.BOUNTY_DEADLINE_NOT_PASSED);
+  }
+  if (hasBountyContext && (errorMessage.includes('Unauthorized') || errorMessage.includes('require_auth'))) {
+    return createContractError(ContractErrorCode.BOUNTY_UNAUTHORIZED);
   }
   if (errorMessage.includes('InvalidFeeRate') || errorMessage.includes('Fee rate is invalid')) {
     return createContractError(ContractErrorCode.BOUNTY_INVALID_FEE_RATE);
@@ -382,10 +391,16 @@ export function parseContractError(error: any): ContractError {
   if (errorMessage.includes('FundsPaused') || errorMessage.includes('funds are currently paused')) {
     return createContractError(ContractErrorCode.BOUNTY_FUNDS_PAUSED);
   }
+  if (hasBountyContext && /AmountBelowMinimum|below.*min(imum)?|below.*configured minimum/i.test(errorMessage)) {
+    return createContractError(ContractErrorCode.BOUNTY_AMOUNT_BELOW_MINIMUM);
+  }
+  if (hasBountyContext && /AmountAboveMaximum|above.*max(imum)?|above.*configured maximum/i.test(errorMessage)) {
+    return createContractError(ContractErrorCode.BOUNTY_AMOUNT_ABOVE_MAXIMUM);
+  }
   if (hasBountyContext && (errorMessage.includes('GovernanceVersionTooLow') || errorMessage.includes('governance version'))) {
     return createContractError(ContractErrorCode.BOUNTY_GOVERNANCE_VERSION_TOO_LOW);
   }
-  if (errorMessage.includes('CircuitBreakerOpen')) {
+  if (errorMessage.includes('CircuitBreakerOpen') || errorMessage.includes('Bounty escrow circuit breaker')) {
     return createContractError(ContractErrorCode.BOUNTY_CIRCUIT_BREAKER_OPEN);
   }
 

@@ -194,11 +194,14 @@ describe('parseContractError string matching', () => {
 
   // ── Bounty-escrow ──────────────────────────────────────────────────
   const bountyEscrowCases: [string, ContractErrorCode][] = [
+    ['Bounty escrow already initialized',              ContractErrorCode.BOUNTY_ALREADY_INITIALIZED],
+    ['Bounty escrow has not been initialized',         ContractErrorCode.BOUNTY_NOT_INITIALIZED],
     ['BountyExists',                                   ContractErrorCode.BOUNTY_EXISTS],
     ['Bounty not found',                               ContractErrorCode.BOUNTY_NOT_FOUND],
     ['FundsNotLocked',                                 ContractErrorCode.BOUNTY_FUNDS_NOT_LOCKED],
     ['ClaimExpired',                                  ContractErrorCode.BOUNTY_CLAIM_EXPIRED],
     ['DeadlineNotPassed',                              ContractErrorCode.BOUNTY_DEADLINE_NOT_PASSED],
+    ['Bounty Unauthorized',                            ContractErrorCode.BOUNTY_UNAUTHORIZED],
     ['InvalidFeeRate',                                 ContractErrorCode.BOUNTY_INVALID_FEE_RATE],
     ['Fee recipient address not set',                  ContractErrorCode.BOUNTY_FEE_RECIPIENT_NOT_SET],
     ['InvalidBatchSize',                               ContractErrorCode.BOUNTY_INVALID_BATCH_SIZE],
@@ -209,6 +212,8 @@ describe('parseContractError string matching', () => {
     ['InsufficientFunds',                              ContractErrorCode.BOUNTY_INSUFFICIENT_FUNDS],
     ['RefundNotApproved',                              ContractErrorCode.BOUNTY_REFUND_NOT_APPROVED],
     ['FundsPaused',                                    ContractErrorCode.BOUNTY_FUNDS_PAUSED],
+    ['Bounty AmountBelowMinimum',                      ContractErrorCode.BOUNTY_AMOUNT_BELOW_MINIMUM],
+    ['Bounty amount is above configured maximum',       ContractErrorCode.BOUNTY_AMOUNT_ABOVE_MAXIMUM],
     ['CircuitBreakerOpen',                             ContractErrorCode.BOUNTY_CIRCUIT_BREAKER_OPEN],
     ['Bounty GovernanceVersionTooLow',                 ContractErrorCode.BOUNTY_GOVERNANCE_VERSION_TOO_LOW],
   ];
@@ -293,6 +298,8 @@ describe('Cross-layer consistency', () => {
       [4,  'Bounty not found'],
       [13, 'Bounty amount is invalid'],
       [16, 'InsufficientFunds'],
+      [19, 'Bounty amount below configured minimum'],
+      [20, 'Bounty amount above configured maximum'],
       [21, 'CircuitBreakerOpen'],
       [22, 'ClaimExpired'],
       [23, 'Bounty GovernanceVersionTooLow'],
